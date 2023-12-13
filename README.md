@@ -12,7 +12,10 @@ sudo dnf install winetricks
 wine setup.exe
 wine notepad.exe
 
-#!/bin/bash
+
+curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
+sh setup-repos.sh
+dnf install webmin
 
 # Update the package manager's repository information
 sudo dnf update -y
