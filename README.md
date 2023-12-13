@@ -1,4 +1,10 @@
 # /windowstolinux
+- **Windows Vs Linux**
+- **Linux File Structure**
+- **Software Installation**
+- **Firewall Configuration**
+- **Directory Creation and Permissions**
+- **Additional System Configurations**
 
 ## Linux File Structure
 - **`/mnt`**: Used for mounted file systems or shared drives.
