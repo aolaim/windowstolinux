@@ -11,25 +11,29 @@
 
 ## Initial Fedora Setup
 1. **Update Package Manager and Repositories**
+2. **Software Installation**
+3. **Firewall Configuration**
+4. **Directory Creation and Permissions**
+5. **Additional System Configurations**
    - `sudo dnf update -y && sudo dnf upgrade --refresh -y`
    - `sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm`
    - `sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm`
 
-2. **Software Installation**
+6. **Software Installation**
    - `sudo dnf install xrdp neofetch qemu @Virtualization ffmpeg --allowerasing python3-pip baobab timeshift dnfdragora cockpit`
    - `pip3 install youtube-dl`
 
-3. **Firewall Configuration**
+7. **Firewall Configuration**
    - `sudo firewall-cmd --add-port=3389/tcp --permanent`
    - `sudo firewall-cmd --add-service=cockpit --permanent`
    - `sudo firewall-cmd --reload`
 
-4. **Directory Creation and Permissions**
+8. **Directory Creation and Permissions**
    - `cd /`
    - `sudo mkdir yourfolder`
    - `sudo chown -R $(whoami):$(id -gn $(whoami)) yourfolder`
 
-5. **Additional System Configurations**
+9. **Additional System Configurations**
    - Mount `/dev/shm` with increased size:
      - `sudo mount -o remount,size=8G /dev/shm`
    - Enable and start services:
