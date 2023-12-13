@@ -171,3 +171,317 @@ Navigate to the directory where you downloaded the PowerShell script and execute
 
 ```powershell
 ./transition-script.ps1 -param1 value1 -param2 value2
+
+# Docker Compose Configuration
+# Version: 3.8
+#
+# Services Included:
+# - Cloudflared: Establishes a secure tunnel for services.
+# - Plex: Media server for streaming movies and shows.
+# - SABnzbd: Binary newsreader for downloading content.
+# - Prowlarr: Indexer manager for Usenet and torrents.
+# - Radarr: Movie collection manager for Usenet and BitTorrent users.
+# - Radarr4K: Separate instance of Radarr for 4K content management.
+# - Sonarr: Series collection manager for Usenet and BitTorrent users.
+# - TDarr: Media transcoding server and node setup.
+# - Overseerr: Media request and management tool.
+# - Tautulli: Analytics and monitoring for Plex servers.
+# - Homarr: Dashboard for self-hosted services.
+# - Dash: Container displaying hardware information.
+# - Notifiarr: Client for centralized notifications and automation.
+# - HomeAssistant: Home automation platform.
+#
+# Volume Configurations:
+# Persistent volumes are defined for each service to ensure data retention and management.
+#
+# Network Settings:
+# Port mappings are provided for external access to services.
+# Network mode is set to 'host' for certain services to facilitate network communication.
+#
+# Environment Variables:
+# - PUID, PGID, TZ: Used for user, group identification, and time zone settings across services.
+# - CLOUDFLARE_TOKEN, ADVERTISE_IP, PLEX_CLAIM, and other specific variables are set per service requirements.
+#
+# Restart Policy:
+# A variable $RESTARTPOLICY controls the restart behavior of all services.
+#
+
+version: '3.8'
+
+services:
+    #cloudflared:
+    #    image: cloudflare/cloudflared:latest
+    #    container_name: cloudflared
+    #    command: tunnel run
+    #    environment:
+    #    - TUNNEL_TOKEN=$CLOUDFLARE_TOKEN
+    #    restart: $RESTARTPOLICY
+
+    plex:
+        image: plexinc/pms-docker:latest
+        container_name: plex
+        restart: $RESTARTPOLICY
+        network_mode: host
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        - ADVERTISE_IP=http://192.168.100.1:32400/
+        - PLEX_CLAIM=claim-kYaicF7_oLugHcfVsder
+        - HOSTNAME=YourPlexRequest
+        devices:
+        - /dev/dri:/dev/dri # Binds the Intel Quicksync decoder to Plex HW Transcode
+        volumes:
+        - plex_config:/config
+        - /media/movies:/movies
+        - /media/4Kmovies:/4Kmovies
+        - /media/shows:/shows
+        healthcheck:
+            test: curl --fail http://192.168.100.1:32400/web/index.html || exit 1
+            interval: 60s
+            retries: 5
+            start_period: 20s
+            timeout: 10s
+
+    sabnzbd:
+        image: lscr.io/linuxserver/sabnzbd:latest
+        container_name: sabnzbd
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        volumes:
+        - sabnzbd_config:/config
+        - /terabytetemp/downloads:/downloads
+        - /terabytetemp/incompletedownloads:/incomplete-downloads
+        ports:
+        - 9001:8080
+        restart: $RESTARTPOLICY
+
+    prowlarr:
+        image: lscr.io/linuxserver/radarr:latest
+        container_name: radarr
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        volumes:
+        - prowlarr_config:/config
+        ports:
+        - 9002:9696
+        restart: $RESTARTPOLICY
+
+    radarr:
+        image: lscr.io/linuxserver/radarr:latest
+        container_name: radarr
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        volumes:
+        - radarr_config:/config
+        - /media/movies/Movies:/movies
+        - /terabytetemp/downloads:/downloads
+        ports:
+        - 9003:7878
+
+    radarr4K:
+        image: lscr.io/linuxserver/radarr:latest
+        container_name: radarr4K
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        volumes:
+        - radarr4k_config:/config
+        - /media/movies/Movies:/movies
+        - /terabytetemp/downloads:/downloads
+        ports:
+        - 9004:7878
+        restart: $RESTARTPOLICY
+
+    sonarr:
+        image: lscr.io/linuxserver/sonarr:latest
+        container_name: sonarr
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        volumes:
+        - sonarr_config:/config
+        - /media/shows/Shows:/shows
+        - /terabytetemp/downloads:/downloads
+        ports:
+        - 9005:8989
+        restart: $RESTARTPOLICY
+
+    tdarr:
+        container_name: tdarr
+        image: ghcr.io/haveagitgat/tdarr:latest
+        restart: $RESTARTPOLICY
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        - serverIP=0.0.0.0
+        - serverPort=8266
+        - webUIPort=8265
+        - internalNode=true
+        - inContainer=true
+        - ffmpegVersion=6
+        - nodeName=MyInternalNode
+        ports:
+        - 9006:8265 # webUI port
+        - 9007:8266 # server port
+        volumes:
+        - tdarr_server:/app/server
+        - tdarr_configs:/app/configs
+        - tdarr_logs:/app/logs
+        - /media/movies/Movies:/movies
+        - /media/shows/Shows:/shows
+        - /terabytetemp/tdarr/!cache:/tdarrcache
+        devices:
+        - /dev/dri:/dev/dri # for QSV
+
+    tdarr-node:
+        container_name: tdarr-node
+        image: ghcr.io/haveagitgat/tdarr_node:latest
+        restart: $RESTARTPOLICY
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        - nodeName=MyExternalNode
+        - serverIP=0.0.0.0
+        - serverPort=9007
+        - inContainer=true
+        - ffmpegVersion=6
+        volumes:
+        - tdarrnode_server:/app/server
+        - tdarrnode_configs:/app/configs
+        - tdarrnode_logs:/app/logs
+        - /terabytetemp/tdarr/movies:/movies
+        - /terabytetemp/tdarr/shows:/shows
+        - /terabytetemp/tdarr/!cache:/temp
+        devices:
+        - /dev/dri:/dev/dri # for QSV
+
+    overseerr:
+        image: sctx/overseerr:develop
+        container_name: overseerr
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        volumes:
+        - overseerr_config:/app/config
+        ports:
+        - 9008:5055
+        restart: $RESTARTPOLICY
+
+    tautulli:
+        image: ghcr.io/tautulli/tautulli:latest
+        container_name: tautulli
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        volumes:
+        - tautulli_config:/config
+        ports:
+        - 9009:8181
+        restart: $RESTARTPOLICY
+
+    homarr:
+        image: ghcr.io/ajnart/homarr:latest
+        container_name: homarr
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        #- EDIT_MODE_PASSWORD=$HOMARRPASSWORD
+        volumes:
+        - homarr_configs:/app/data/configs
+        - homarr_data:/data
+        - homarr_icons:/app/public/icons
+        ports:
+        - 9010:7575
+        restart: $RESTARTPOLICY
+
+    dash:
+        image: mauricenino/dashdot:latest
+        container_name: dash
+        restart: $RESTARTPOLICY
+        privileged: true
+        ports:
+        - 9011:3001
+        volumes:
+        - /:/mnt/host:ro
+
+    notifiarr:
+        container_name: notifiarr
+        image: golift/notifiarr
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        ports:
+        - 9012:5454
+        volumes:
+        - notifiarr_config:/config
+        restart: $RESTARTPOLICY
+    
+    homeassistant:
+        image: ghcr.io/home-assistant/home-assistant:stable
+        container_name: homeassistant
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        ports:
+        - 9013:8123
+        volumes:
+        - homeassistant_config:/config
+        - /etc/localtime:/etc/localtime:ro
+        - /run/dbus:/run/dbus:ro
+        privileged: true
+        restart: $RESTARTPOLICY
+        # devices:
+        # - /dev/ttyUSB0:/dev/ttyUSB0
+
+    wizarr:
+        container_name: wizarr
+        image: ghcr.io/wizarrrr/wizarr
+        environment:
+        - PUID=$PUID
+        - PGID=$PGID
+        - TZ=$TZ
+        ports:
+        - 9014:5690
+        volumes:
+        - wizarr_config:/data/database
+volumes:
+  plex_config:
+  sabnzbd_config:
+  prowlarr_config:
+  radarr_config:
+  radarr4k_config:
+  sonarr_config:
+  tdarr_server:
+  tdarr_configs:
+  tdarr_logs:
+  tdarr_cache:
+  tdarrnode_server:
+  tdarrnode_configs:
+  tdarrnode_logs:
+  tdarr_movies:
+  tdarr_shows:
+  tdarr_temp:
+  overseerr_config:
+  tautulli_config:
+  homarr_configs:
+  homarr_data:
+  homarr_icons:
+  notifiarr_config:
+  homeassistant_config:
+  wizarr_config:
