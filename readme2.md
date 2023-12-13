@@ -1,4 +1,4 @@
-# /windowstolinux Guide
+# /windowstolinux guide
 
 1. Introduction
 2. Linux File Structure
@@ -15,8 +15,24 @@
 
 ### 1. Introduction
 
-This guide is for anyone looking to transition from Windows to Linux, providing necessary insights and tools for a seamless switch. Tailored for power users, developers, or those just starting with Linux, it focuses on delivering practical knowledge for effective system management.
+Linux is the alternative to Microsoft turning into Nolan Sorrento
+"Once we can roll back some of Halliday's ad restrictions, we estimate we can sell up to 80% of an individual's visual field before inducing seizures, so picture this..."
 
-The move to Linux is often driven by the need for greater control over your computing environment, particularly in areas of privacy and autonomy. Windows users increasingly encounter issues like intrusive ads and concerns over data privacy. Linux stands as a viable alternative, offering an environment where your information is under your control, free from the commercial constraints often seen in other operating systems.
+This guide will walk you thorough understanding of Linux basics and essential skills for system management.
 
-This guide will equip you with a thorough understanding of Linux basics and essential skills for system management. You'll learn to navigate the Linux environment effectively, leveraging its capabilities to meet your needs.
+### 2. Linux File Structure
+
+Linux uses a hierarchical directory structure that starts from the root directory, '/'. Instead of 'C:\', the base is '/' and for something like 'C:\Users\You\Desktop', it's '/home/you/Desktop'. Here’s a quick rundown of some directories:
+
+- **`/` (Root)**: The base of the file system. Everything branches from here.
+- **`/bin`**: Contains essential user binaries or programs, vital for booting and running the system.
+- **`/boot`**: Holds the Linux kernel, initial RAM disk image, and boot loader – crucial for starting the system.
+- **`/dev`**: This is where device files live. Linux treats devices like files, which are interfaces to drivers.
+- **`/etc`**: System-wide configuration files and scripts are stored here, integral for startup and overall system behavior.
+- **`/home`**: Home directories for users. Personal files and settings go here, similar to 'C:\\Users' in Windows.
+- **`/lib`**: Houses shared library images needed by system binaries.
+- **`/media`** and **`/mnt`**: Used for mounting external devices and filesystems, like USB drives.
+- **`/opt`**: A spot for optional or third-party software.
+- **`/sbin`**: System administration binaries – more specialized than `/bin`.
+- **`/usr`**: A large directory containing most user applications and utilities, with subdirectories for binaries, system libraries, documentation, and more.
+- **`/var`**: Variable data—logs, mail, spool files, and other dynamic files.
