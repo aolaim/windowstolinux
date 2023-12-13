@@ -13,8 +13,6 @@
 11. Customizing Your Linux Environment
 12. Conclusion
 
-##Welcome to the "Windows To Linux Transition Guide". 
-
 ### 1. Introduction
 
 This guide is for anyone looking to transition from Windows to Linux, providing necessary insights and tools for a seamless switch. Tailored for power users, developers, or those just starting with Linux, it focuses on delivering practical knowledge for effective system management.
