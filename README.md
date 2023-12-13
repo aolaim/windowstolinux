@@ -12,11 +12,11 @@
 - **`ll`**: Lists files and directories with detailed information (similar to `ls -l`).
 
 ## Initial Fedora Setup
-1. **Update Package Manager and Repositories**
-2. **Software Installation**
-3. **Firewall Configuration**
-4. **Directory Creation and Permissions**
-5. **Additional System Configurations**
+- **Update Package Manager and Repositories**
+- **Software Installation**
+- **Firewall Configuration**
+- **Directory Creation and Permissions**
+- **Additional System Configurations**
    - `sudo dnf update -y && sudo dnf upgrade --refresh -y`
    - `sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm`
    - `sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm`
