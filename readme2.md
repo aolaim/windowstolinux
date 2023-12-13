@@ -1,4 +1,4 @@
-# Windows To Linux Transition Guide
+# /windowstolinux Guide
 
 1. Introduction
 2. Linux File Structure
