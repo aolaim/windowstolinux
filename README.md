@@ -1,3 +1,5 @@
+#/windowstolinux
+
 ## Linux File Structure
 - **`/mnt`**: Used for mounted file systems or shared drives.
 - **`/opt`**: Directory for third-party software applications.
