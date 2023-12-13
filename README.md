@@ -485,3 +485,20 @@ volumes:
   notifiarr_config:
   homeassistant_config:
   wizarr_config:
+
+
+
+# Windows To Linux Transition Guide
+
+1. Introduction
+2. Linux File Structure
+3. Basic Linux Commands
+4. Windows vs. Linux
+5. Initial Fedora Setup
+6. Software Installation
+7. Firewall Configuration
+8. Directory Creation and Permissions
+9. Additional System Configurations
+10. Docker Compose Configuration
+11. Customizing Your Linux Environment
+12. Conclusion
