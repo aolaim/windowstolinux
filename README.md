@@ -553,6 +553,10 @@ Wine
 Guake
 Kdenlive
 
+Email serversin linux 
+Apache web servers 
+Bash guis to replace powershell
+
 # Windows To Linux Transition Guide
 
 1. Introduction
