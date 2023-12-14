@@ -5,6 +5,17 @@
 - **Firewall Configuration**
 - **Directory Creation and Permissions**
 - **Additional System Configurations**
+
+- 
+
+sudo dnf upgrade --refresh
+sudo dnf -y groupupdate core
+sudo dnf install -y rpmfusion-free-release-tainted
+sudo dnf install -y rpmfusion-nonfree-release-tainted 
+sudo dnf install -y dnf-plugins-core
+
+
+
 sudo dnf config-manager --add-repo https://dl.winehq.org/wine-builds/fedora/34/winehq.repo
 sudo dnf install wine
 sudo dnf install winetricks
@@ -486,7 +497,60 @@ volumes:
   homeassistant_config:
   wizarr_config:
 
+sudo dnf copr enable kwizart/fedy
+sudo dnf install fedy -y
 
+sudo dnf install steam
+
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+sudo nano /etc/dnf/dnf.conf
+max_parallel_downloads=10
+
+sudo dnf install vlc
+
+sudo dnf install gstreamer1-plugins-{bad-\*,good-\*,base} gstreamer1-plugin-openh264 gstreamer1-libav --exclude=gstreamer1-plugins-bad-free-devel
+
+sudo dnf install lame\* --exclude=lame-devel
+
+sudo dnf group upgrade --with-optional Multimedia
+
+sudo hostnamectl set-hostname "New_Custom_Name"
+
+sudo dnf -y groupupdate sound-and-video
+
+sudo dnf group upgrade --with-optional Multimedia
+
+sudo dnf install -y fira-code-fonts 'mozilla-fira*' 'google-roboto*'
+
+sudo dnf install -y gnome-tweaks gnome-extensions-app
+
+sudo dnf install curl cabextract xorg-x11-font-utils fontconfig
+
+sudo rpm -i https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
+
+sudo dnf install -y unzip p7zip p7zip-plugins unrar
+
+sudo dnf install -y audacity 
+flatpak install flathub org.audacityteam.Audacity
+
+sudo dnf install -y gimp 
+flatpak install flathub org.gimp.GIMP
+
+flatpak install flathub com.simplenote.Simplenote
+
+flatpak install flathub com.spotify.Client
+
+flatpak install flathub org.standardnotes.standardnotes
+
+flatpak install flathub com.obsproject.Studio
+
+sudo dnf install -y gparted
+
+Upon first use, a prompt appears at the top to enable Third Party Software Repositories. This option was also available in the initial Welcome screen. The option is additionally available in the hamburger menu (the three stacked lines) in the upper right corner. Select that menu and choose Software Repositories.
+
+switch to your UI
+sudo dnf -y install switchdesk switchdesk-gui
 
 # Windows To Linux Transition Guide
 
