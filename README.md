@@ -530,6 +530,29 @@ Upon first use, a prompt appears at the top to enable Third Party Software Repos
 switch to your UI
 sudo dnf -y install switchdesk switchdesk-gui
 
+DNF Automatic
+SELinux
+Gnome Tweaks
+Firewalld
+Fedora Workstation Live USB Creator
+Conky
+Vim
+Nmap
+Flatseal
+Stacer
+Ranger
+Synergy
+Remmina
+Krita
+VirtualBox
+GParted
+KVM (Kernel-based Virtual Machine)
+ClamAV
+PulseAudio Volume Control
+Wine
+Guake
+Kdenlive
+
 # Windows To Linux Transition Guide
 
 1. Introduction
