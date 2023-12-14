@@ -14,16 +14,6 @@ sudo dnf install -y rpmfusion-free-release-tainted
 sudo dnf install -y rpmfusion-nonfree-release-tainted 
 sudo dnf install -y dnf-plugins-core
 
-
-
-sudo dnf config-manager --add-repo https://dl.winehq.org/wine-builds/fedora/34/winehq.repo
-sudo dnf install wine
-sudo dnf install winetricks
-
-wine setup.exe
-wine notepad.exe
-
-
 curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
 sh setup-repos.sh
 dnf install webmin
@@ -509,23 +499,11 @@ max_parallel_downloads=10
 
 sudo dnf install vlc
 
-sudo dnf install gstreamer1-plugins-{bad-\*,good-\*,base} gstreamer1-plugin-openh264 gstreamer1-libav --exclude=gstreamer1-plugins-bad-free-devel
-
-sudo dnf install lame\* --exclude=lame-devel
-
-sudo dnf group upgrade --with-optional Multimedia
-
 sudo hostnamectl set-hostname "New_Custom_Name"
 
 sudo dnf -y groupupdate sound-and-video
 
-sudo dnf group upgrade --with-optional Multimedia
-
 sudo dnf install -y fira-code-fonts 'mozilla-fira*' 'google-roboto*'
-
-sudo dnf install -y gnome-tweaks gnome-extensions-app
-
-sudo dnf install curl cabextract xorg-x11-font-utils fontconfig
 
 sudo rpm -i https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
 
