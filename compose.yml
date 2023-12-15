@@ -1,0 +1,430 @@
+
+# Docker Compose File Introduction
+# This Docker Compose file is structured to showcase the best practices and features available in Docker Compose version 3.
+
+# Key Elements:
+# - Services: Defining and configuring the different containers to be deployed. Each 'Service' can include specifications such as images, container names, ports, and volumes. 
+# - Fragments: Utilize YAML fragments to reuse configurations across the file, promoting a DRY (Don't Repeat Yourself) approach.
+# - Extensions: Docker-specific extensions are used to introduce additional functionalities beyond the standard Docker capabilities.
+# - Interpolation: Environment variables are dynamically used to set values within the compose file, adding flexibility and customization.
+# - Merge: Enables the combination of multiple compose files or fragments, facilitating modular and scalable configurations.
+# - Include: Allows the incorporation of external files or configurations within the Compose file, enhancing modularity.
+# - Volumes Management: Focuses on enabling persistent data storage with named volumes. These volumes support custom drivers, driver options, and labels for improved organization and control. The 'external' flag is particularly useful for managing volumes outside of the Compose file's lifecycle.
+
+# Summary:
+# This compose file leverages advanced features such as YAML fragments, health checks, and conditional service dependencies to ensure an atomic deployment. 
+# Services are launched in a specific order based on their operational dependencies and health status. 
+# This systematic approach enhances control over the Docker environment, ensuring that services start and function correctly in relation to each other.
+
+# Simple Diagram Outline:
+# This outline provides a high-level overview of the key components in a Docker Compose file.
+
+# Include:
+# Incorporates other Compose files into the current application model, allowing for modular configuration. 
+# Example syntax for including external Compose files with their respective environment files:
+# include:
+#    - path: ../another/compose.yaml
+#      env_file:
+#        - ../another/.env
+#        - ../another/dev.env
+# This allows you to pull in configurations and services from external sources, 
+# facilitating reusable and maintainable setups.
+
+# x-common-env: &common-env
+#     # Shared environment variables across multiple services.
+#     # Example: Define common environment settings like PUID, PGID, TZ, etc.
+
+# x-common-devices: &common-devices
+#     # Shared hardware mappings across services.
+#     # Example: Mapping hardware like GPUs or specific devices into containers.
+
+# Services:
+#   app1:
+#       image:
+#       container_name:
+#       command:
+#       environment:
+#       ports:
+#       devices:
+#       volumes
+#       healthcheck
+#   app2:
+#       image:
+#       container_name:
+#       command:
+#       environment:
+#       ports:
+#       devices:
+#       volumes
+#       healthcheck
+#       depends_on
+# Volumes
+#   wizarr_data_local:
+#       name:
+#       driver:
+#       labels:
+#       driveropts:
+
+# Simple Diagram Outline:
+# This outline provides a high-level overview of the key components in a Docker Compose file.
+# include:
+#    - path: ../another/compose.yaml
+#      env_file:
+#        - ../another/.env
+#        - ../another/dev.env
+
+# x-common-env: &common-env
+#     # Shared environment variables across multiple services.
+
+# x-common-devices: &common-devices
+#     # Shared hardware mappings across services.
+
+# Services:
+#   app1:
+#       image:
+#       container_name:
+#       command:
+#       environment:
+#       ports:
+#       devices:
+#       volumes:
+#       healthcheck:
+#   app2:
+#       image:
+#       container_name:
+#       command:
+#       environment:
+#       ports:
+#       devices:
+#       volumes:
+#       depends_on:
+
+# Volumes:
+#   vol1:
+#       name:
+#       driver:
+#       labels:
+#       driver_opts:
+
+x-common-env: &common-env
+    PUID: 0
+    PGID: 0
+    TZ: America/New_York #change to your timezone
+
+x-common-devices: &common-devices
+  - "/dev/dri:/dev/dri"  # map intel quicksync device to containers
+
+#only required top-level element
+services:
+    cloudflared:
+        image: cloudflare/cloudflared:latest
+        container_name: cloudflared
+        command: tunnel run
+        environment:
+            TUNNEL_TOKEN: $CLOUDFLARE_TOKEN
+            <<: *common-env
+        restart: $RESTARTPOLICY
+
+    plex:
+        # Image specifies the Docker image to use for this service.
+        image: plexinc/pms-docker:latest
+        # container_name sets a custom name for the running container.
+        container_name: plex
+        # restart policy to control the restart behavior.
+        restart: $RESTARTPOLICY
+        # network_mode: host for direct access to the host's network.
+        network_mode: host
+        # environment variables, including those from the common environment setup.
+        environment:
+            <<: *common-env
+            ADVERTISE_IP: "http://192.168.100.1:32400/"
+            PLEX_CLAIM: "claim-kYaicF7_oLugHcfVsder"
+            HOSTNAME: "YourPlexRequest"
+        # devices: shared hardware mappings.
+        devices: *common-devices
+        # volumes: mapping local directories or named volumes to the container.
+        volumes:
+            - $APPDATA/plex:/config
+            - /media/movies:/movies
+            - /media/4Kmovies:/4Kmovies
+            - /media/shows:/shows
+        # healthcheck: to check the health of the service at regular intervals.
+        healthcheck:
+            test: curl --fail http://192.168.1.2:32400/web/index.html || exit 1
+            interval: 10s
+            retries: 5
+            start_period: 10s
+            timeout: 5s
+        # depends_on: specifies dependency on another service, ensuring order of service startup.
+        depends_on:
+            - cloudflared
+    
+    sabnzbd:
+        image: lscr.io/linuxserver/sabnzbd:latest
+        container_name: sabnzbd
+        environment:
+            <<: *common-env
+        volumes:
+            - $APPDATA/sabnzbd:/config
+            - /terabytetemp/downloads:/downloads
+            - /terabytetemp/incompletedownloads:/incomplete-downloads
+        ports:
+            - 9001:8080
+        restart: $RESTARTPOLICY
+        depends_on:
+            plex:
+                condition: service_healthy
+  
+    prowlarr:
+        image: lscr.io/linuxserver/prowlarr:latest
+        container_name: prowlarr
+        environment:
+            <<: *common-env
+        volumes:
+            - $APPDATA/prowlarr:/config
+        ports:
+            - 9002:9696
+        restart: $RESTARTPOLICY
+        healthcheck:
+            test: curl --fail http://192.168.1.2:9002 || exit 1
+            interval: 10s
+            retries: 5
+            start_period: 5s
+            timeout: 5s
+        depends_on:
+            plex:
+                condition: service_healthy
+
+    radarr:
+        image: lscr.io/linuxserver/radarr:latest
+        container_name: radarr
+        environment:
+            <<: *common-env
+        volumes:
+            - $APPDATA/radarr:/config
+            - /media/movies/Movies:/movies
+            - /terabytetemp/downloads:/downloads
+        ports:
+            - 9003:7878
+        restart: $RESTARTPOLICY
+        depends_on:
+            prowlarr:
+                condition: service_healthy
+
+    radarr4K:
+        image: lscr.io/linuxserver/radarr:latest
+        container_name: radarr4K
+        environment:
+            <<: *common-env
+        volumes:
+            - $APPDATA/radarr4K:/config
+            - /media/movies/Movies:/movies
+            - /terabytetemp/downloads:/downloads
+        ports:
+            - 9004:7878
+        restart: $RESTARTPOLICY
+        depends_on:
+            prowlarr:
+                condition: service_healthy
+
+    sonarr:
+        image: lscr.io/linuxserver/sonarr:latest
+        container_name: sonarr
+        environment:
+            <<: *common-env
+        volumes:
+            - $APPDATA/sonarr:/config
+            - /media/shows/Shows:/shows
+            - /terabytetemp/downloads:/downloads
+        ports:
+            - 9005:8989
+        restart: $RESTARTPOLICY
+        depends_on:
+            prowlarr:
+                condition: service_healthy
+
+    tdarr:
+        container_name: tdarr
+        image: ghcr.io/haveagitgat/tdarr:latest
+        restart: $RESTARTPOLICY
+        environment:
+            <<: *common-env
+            serverIP: "0.0.0.0"
+            serverPort: "8266"
+            webUIPort: "8265"
+            internalNode: "true"
+            inContainer: "true"
+            ffmpegVersion: "6"
+            nodeName: "MyInternalNode"
+        ports:
+            - 9006:8265 # webUI port
+            - 9007:8266 # server port
+        volumes:
+            - $APPDATA/tdarr/server:/app/server
+            - $APPDATA/tdarr/configs:/app/configs
+            - $APPDATA/tdarr/logs:/app/logs
+            - /media/movies/Movies:/movies
+            - /media/shows/Shows:/shows
+            - /dev/zram0:/tdarrcache
+        devices: *common-devices
+        healthcheck:
+            test: curl --fail http://192.168.1.2:9007 || exit 1
+            interval: 10s
+            retries: 5
+            start_period: 10s
+            timeout: 5s
+        depends_on:
+            plex:
+                condition: service_healthy
+    
+    tdarr_node:
+        container_name: tdarr_node
+        image: ghcr.io/haveagitgat/tdarr_node:latest
+        restart: $RESTARTPOLICY
+        environment:
+            <<: *common-env
+            nodeName: "MyExternalNode"
+            serverIP: "0.0.0.0"
+            serverPort: "9007"
+            inContainer: "true"
+            ffmpegVersion: "6"
+        volumes:
+            - $APPDATA/tdarrnode/server:/app/server
+            - $APPDATA/tdarrnode/configs:/app/configs
+            - $APPDATA/tdarrnode/logs:/app/logs
+            - /terabytetemp/tdarr/movies:/movies
+            - /terabytetemp/tdarr/shows:/shows
+            - /terabytetemp/tdarr/!cache:/temp
+        devices: *common-devices
+        depends_on:
+            tdarr:
+                condition: service_healthy
+
+    overseerr:
+        image: sctx/overseerr:develop
+        container_name: overseerr
+        environment:
+            <<: *common-env
+        volumes:
+            - $APPDATA/overseerr:/app/config
+        ports:
+            - 9008:5055
+        restart: $RESTARTPOLICY
+        depends_on:
+            plex:
+                condition: service_healthy
+
+    tautulli:
+        image: ghcr.io/tautulli/tautulli:latest
+        container_name: tautulli
+        environment:
+            <<: *common-env
+        volumes:
+            - $APPDATA/tautulli:/config
+        ports:
+            - 9009:8181
+        restart: $RESTARTPOLICY
+        depends_on:
+            plex:
+                condition: service_healthy
+
+    homarr:
+        image: ghcr.io/ajnart/homarr:latest
+        container_name: homarr
+        environment:
+            <<: *common-env
+            #- EDIT_MODE_PASSWORD=$HOMARRPASSWORD
+        volumes:
+            - $APPDATA/homarr/configs:/app/data/configs
+            - $APPDATA/homarr/icons:/app/public/icons
+            - $APPDATA/homarr/data:/data
+        ports:
+            - 9010:7575
+        restart: $RESTARTPOLICY
+        depends_on:
+            plex:
+                condition: service_healthy
+
+    dash:
+        image: mauricenino/dashdot:latest
+        container_name: dash
+        restart: $RESTARTPOLICY
+        privileged: true
+        ports:
+            - 9011:3001
+        volumes:
+            - /zram0:/mnt/host:ro
+        depends_on:
+            - cloudflared
+
+    notifiarr:
+        container_name: notifiarr
+        image: golift/notifiarr
+        environment:
+            <<: *common-env
+        ports:
+            - 9012:5454
+        volumes:
+            - $APPDATA/notifiarr:/config
+        restart: $RESTARTPOLICY
+        depends_on:
+            plex:
+                condition: service_healthy
+
+    homeassistant:
+        image: "ghcr.io/home-assistant/home-assistant:stable"
+        container_name: homeassistant
+        environment:
+            <<: *common-env
+        ports:
+            - 9013:8123
+        volumes:
+            - $APPDATA/homeassistant:/config
+            - /etc/localtime:/etc/localtime:ro
+            - /run/dbus:/run/dbus:ro
+        privileged: true
+        restart: $RESTARTPOLICY
+        # devices:
+        # - /dev/ttyUSB0:/dev/ttyUSB0
+        depends_on:
+            plex:
+                condition: service_healthy
+
+#wizarr:
+#    container_name: wizarr
+#    image: ghcr.io/wizarrrr/wizarr
+#    ports:
+#        - 9014:5690
+#    volumes:
+   #- wizarr_data_cloud:/data/database  # Using cloud volume
+#     depends_on:
+#         plex:
+#             condition: service_healthy
+
+#volumes:
+    # Local storage volumes offer straightforward storage solutions with minimal configuration.
+    # Beware of using 'docker-compose down --remove-orphans -v' as it will delete your files.
+#    wizarr_data_local:
+#        name: "wizarr_local_volume"
+#        driver: local
+#        labels:
+#            com.example.description: "Wizarr Local Data Volume"
+#            com.example.department: "IT/Ops"
+#            com.example.custom-label: "WizarrLocalStorage"
+
+    # Cloud storage volumes require a specific driver compatible with the cloud provider.
+    # Replace 'cloud_driver_name' with the actual driver for your cloud storage documentation.
+    # I never tested this I just used GPT and fed it the manual.
+#    wizarr_data_cloud:
+#        name: "wizarr_cloud_volume"
+#        driver: [your_cloud_storage_driver]  # Replace with actual cloud driver
+#        driver_opts:
+            # Example settings for AWS S3 (adjust for your cloud provider):
+            # AccessKey: "AWS_ACCESS_KEY_ID"
+            # SecretKey: "AWS_SECRET_ACCESS_KEY"
+            # Bucket: "your-s3-bucket-name"
+            # Region: "us-east-1"
+#        labels:
+#            com.example.description: "Wizarr Cloud Data Volume"
+#            com.example.department: "Cloud Storage"
+#            com.example.custom-label: "WizarrCloudStorage"
