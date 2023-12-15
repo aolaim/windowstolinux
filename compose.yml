@@ -1,6 +1,7 @@
 
 # Docker Compose File Introduction
 # This Docker Compose file is structured to showcase the best practices and features available in Docker Compose version 3.
+# https://docs.docker.com/compose/compose-file/
 
 # Key Elements:
 # - Services: Defining and configuring the different containers to be deployed. Each 'Service' can include specifications such as images, container names, ports, and volumes. 
@@ -15,55 +16,6 @@
 # This compose file leverages advanced features such as YAML fragments, health checks, and conditional service dependencies to ensure an atomic deployment. 
 # Services are launched in a specific order based on their operational dependencies and health status. 
 # This systematic approach enhances control over the Docker environment, ensuring that services start and function correctly in relation to each other.
-
-# Simple Diagram Outline:
-# This outline provides a high-level overview of the key components in a Docker Compose file.
-
-# Include:
-# Incorporates other Compose files into the current application model, allowing for modular configuration. 
-# Example syntax for including external Compose files with their respective environment files:
-# include:
-#    - path: ../another/compose.yaml
-#      env_file:
-#        - ../another/.env
-#        - ../another/dev.env
-# This allows you to pull in configurations and services from external sources, 
-# facilitating reusable and maintainable setups.
-
-# x-common-env: &common-env
-#     # Shared environment variables across multiple services.
-#     # Example: Define common environment settings like PUID, PGID, TZ, etc.
-
-# x-common-devices: &common-devices
-#     # Shared hardware mappings across services.
-#     # Example: Mapping hardware like GPUs or specific devices into containers.
-
-# Services:
-#   app1:
-#       image:
-#       container_name:
-#       command:
-#       environment:
-#       ports:
-#       devices:
-#       volumes
-#       healthcheck
-#   app2:
-#       image:
-#       container_name:
-#       command:
-#       environment:
-#       ports:
-#       devices:
-#       volumes
-#       healthcheck
-#       depends_on
-# Volumes
-#   wizarr_data_local:
-#       name:
-#       driver:
-#       labels:
-#       driveropts:
 
 # Simple Diagram Outline:
 # This outline provides a high-level overview of the key components in a Docker Compose file.
