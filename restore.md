@@ -19,22 +19,27 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 flatpak update
 
 ## enable flathub in discovery
-- we will install apps from here if possible
+- Open Settings in the Discover App and enable flatplack
 
 sudo dnf -y update && sudo dnf -y upgrade --refresh
 
-#reboot
+## Update all core packages
+reboot
 
+## Update hardware
 sudo fwupdmgr refresh --force 
 sudo fwupdmgr get-updates 
 sudo fwupdmgr update
 
-#Enable hardware encoding
+## Enable intel hardware encoding
 sudo dnf install intel-media-driver
 
-#Disable NetworkManager-wait-online.service
-#Disabling it can decrease the boot time by at least ~15s-20s:
+## Disable NetworkManager-wait-online.service
+Disabling it can decrease the boot time by at least ~15s-20s:
+
+```
 sudo systemctl disable NetworkManager-wait-online.service
+```
 
 #Disable Gnome Software from Startup Apps
 sudo rm /etc/xdg/autostart/org.gnome.Software.desktop
