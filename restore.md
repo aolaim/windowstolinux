@@ -23,44 +23,58 @@ sudo dnf group update core
 ```
 
 ## add flatpak
+```
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak update
+```
 
 ## enable flathub in discovery
 - Open Settings in the Discover App and enable flatplack
-
+```
 sudo dnf -y update && sudo dnf -y upgrade --refresh
+```
 
 ## Update all core packages
+```
 reboot
+```
 
 ## Update hardware
+```
 sudo fwupdmgr refresh --force 
 sudo fwupdmgr get-updates 
 sudo fwupdmgr update
+```
 
 ## Enable intel hardware encoding
+```
 sudo dnf install intel-media-driver
+```
 
 ## Disable NetworkManager-wait-online.service
 Disabling it can decrease the boot time by at least ~15s-20s:
-
 ```
 sudo systemctl disable NetworkManager-wait-online.service
 ```
 
 #Disable Gnome Software from Startup Apps
+```
 sudo rm /etc/xdg/autostart/org.gnome.Software.desktop
+```
 
 #Microsoft Fonts
-sudo dnf install -y curl cabextract xorg-x11-font-utils fontconfig
+```
+sudo dnf install -y curl cabextract xorg-x11-font-utils fontconfig &&
 sudo rpm -i https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
+```
 
 #restore linuxoverview page 
 #restore fstab
 
 #set custom name
+```
 sudo hostnamectl set-hostname "New_Custom_Name"
+```
 
 7. **Firewall Configuration**
    - `sudo firewall-cmd --add-port=3389/tcp --permanent`
