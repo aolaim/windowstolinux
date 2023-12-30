@@ -1,4 +1,5 @@
 ## Install virtualmin
+- Per docs, install first
 ```
 wget https://software.virtualmin.com/gpl/scripts/virtualmin-install.sh
 sudo sh virtualmin-install.sh
