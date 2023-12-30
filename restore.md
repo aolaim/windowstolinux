@@ -5,22 +5,23 @@ wget https://software.virtualmin.com/gpl/scripts/virtualmin-install.sh
 sudo sh virtualmin-install.sh
 ```
 
+## restore linuxoverview page
+
 ## Terminal to root
+- promote yourself
 ```
 su -
+```
+
+## restore fstab
+```
+cp /path/to/backup/fstab /etc/fstab
 ```
 
 ## Make downloads faster
 ```
 nano /etc/dnf/dnf.conf
 max_parallel_downloads=10
-```
-
-## Install docker
-```
-dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-dnf install docker-ce docker-ce-cli containerd.io
-systemctl start docker
 ```
 
 ## Update all core packages
@@ -74,10 +75,6 @@ sudo dnf install -y curl cabextract xorg-x11-font-utils fontconfig &&
 sudo rpm -i https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
 ```
 
-## restore linuxoverview page 
-
-## restore fstab
-
 ## set custom name
 ```
 sudo hostnamectl set-hostname "New_Custom_Name"
@@ -87,13 +84,6 @@ sudo hostnamectl set-hostname "New_Custom_Name"
 ```
 sudo firewall-cmd --add-port=3389/tcp --permanent
 sudo firewall-cmd --reload
-```
-   
-## Directory Creation and Permissions on the root
-```
-cd /
-sudo mkdir yourfolder
-chown -R $(whoami):$(id -gn $(whoami)) yourfolder
 ```
 
 ## Load Intel GPU and assign admin rights to everyone
@@ -115,20 +105,20 @@ sudo modprobe i915 && sudo chmod -R 777 /dev/dri
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+
+## Install docker
+```
+dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+dnf install docker-ce docker-ce-cli containerd.io
+systemctl start docker
+```
+
+## restore Plex
+- create your folder under your home folder
+- then run this cmd to symbolic
+```
+ln -s /home/iamgroot/webengine/ /webengine
+```
+
+- its wise to add your items under the drive you created earlier
+- this ensures all furture files and folders are owned by you
