@@ -1,18 +1,26 @@
 ## Install virtualmin
+```
 wget https://software.virtualmin.com/gpl/scripts/virtualmin-install.sh
 sudo sh virtualmin-install.sh
+```
 
 ## Make downloads faster
+```
 sudo nano /etc/dnf/dnf.conf
 max_parallel_downloads=10
+```
 
 ## Install docker
+```
 sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
 sudo dnf install docker-ce docker-ce-cli containerd.io
 sudo systemctl start docker
+```
 
 ## Update all core packages
+```
 sudo dnf group update core
+```
 
 ## add flatpak
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
