@@ -4,22 +4,27 @@ wget https://software.virtualmin.com/gpl/scripts/virtualmin-install.sh
 sudo sh virtualmin-install.sh
 ```
 
+## Terminal to root
+```
+su -
+```
+
 ## Make downloads faster
 ```
-sudo nano /etc/dnf/dnf.conf
+nano /etc/dnf/dnf.conf
 max_parallel_downloads=10
 ```
 
 ## Install docker
 ```
-sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-sudo dnf install docker-ce docker-ce-cli containerd.io
-sudo systemctl start docker
+dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+dnf install docker-ce docker-ce-cli containerd.io
+systemctl start docker
 ```
 
 ## Update all core packages
 ```
-sudo dnf group update core
+dnf group update core
 ```
 
 ## add flatpak
@@ -31,63 +36,69 @@ flatpak update
 ## enable flathub in discovery
 - Open Settings in the Discover App and enable flatplack
 ```
-sudo dnf -y update && sudo dnf -y upgrade --refresh
+dnf -y update && sudo dnf -y upgrade --refresh
 ```
 
-## Update all core packages
+## Reboot
 ```
 reboot
 ```
 
 ## Update hardware
 ```
-sudo fwupdmgr refresh --force 
-sudo fwupdmgr get-updates 
-sudo fwupdmgr update
+fwupdmgr refresh --force 
+fwupdmgr get-updates 
+fwupdmgr update
 ```
 
 ## Enable intel hardware encoding
 ```
-sudo dnf install intel-media-driver
+dnf install intel-media-driver
 ```
 
 ## Disable NetworkManager-wait-online.service
 Disabling it can decrease the boot time by at least ~15s-20s:
 ```
-sudo systemctl disable NetworkManager-wait-online.service
+systemctl disable NetworkManager-wait-online.service
 ```
 
-#Disable Gnome Software from Startup Apps
+## Disable Gnome Software from Startup Apps
 ```
-sudo rm /etc/xdg/autostart/org.gnome.Software.desktop
+sudo rm /etc/xdg/autostart/org.gnome.Software.desktop -y
 ```
 
-#Microsoft Fonts
+## Microsoft Fonts
 ```
 sudo dnf install -y curl cabextract xorg-x11-font-utils fontconfig &&
 sudo rpm -i https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
 ```
 
-#restore linuxoverview page 
-#restore fstab
+## restore linuxoverview page 
 
-#set custom name
+## restore fstab
+
+## set custom name
 ```
 sudo hostnamectl set-hostname "New_Custom_Name"
 ```
 
-7. **Firewall Configuration**
-   - `sudo firewall-cmd --add-port=3389/tcp --permanent`
-   - `sudo firewall-cmd --add-service=cockpit --permanent`
-   - `sudo firewall-cmd --reload`
+## Firewall Configuration
+```
+sudo firewall-cmd --add-port=3389/tcp --permanent
+sudo firewall-cmd --reload
+```
    
-   8. **Directory Creation and Permissions**
-   - `cd /`
-   - `sudo mkdir yourfolder`
-   - `sudo chown -R $(whoami):$(id -gn $(whoami)) yourfolder`
-   - mount your shares to a central location 
+## Directory Creation and Permissions on the root
+```
+cd /
+sudo mkdir yourfolder
+chown -R $(whoami):$(id -gn $(whoami)) yourfolder
+```
 
-   sudo modprobe i915 && sudo chmod -R 777 /dev/dri
+## Load Intel GPU and assign admin rights to everyone
+```
+sudo modprobe i915 && sudo chmod -R 777 /dev/dri
+```
    
 #Software to install
 #flatpak install flathub com.usebottles.bottles
