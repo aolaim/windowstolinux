@@ -11,11 +11,8 @@ sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/dock
 sudo dnf install docker-ce docker-ce-cli containerd.io
 sudo systemctl start docker
 
-## 
+## Update all core packages
 sudo dnf group update core
-
-## 
-sudo dnf install dnf-plugins-core
 
 ## add flatpak
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
