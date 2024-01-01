@@ -4,6 +4,7 @@
 wget https://software.virtualmin.com/gpl/scripts/virtualmin-install.sh
 sudo sh virtualmin-install.sh
 ```
+## xvnc ini setup page
 
 ## restore linuxoverview page
 
